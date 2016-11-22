@@ -18,11 +18,7 @@ public class MainPresenterImpl implements MainPresenter {
     public void balanceEquation(List<String> reactantsString, List<String> productsString) {
         try {
             ChemicalEquation chemicalEquation = ChemicalEquation.buildEquation(reactantsString, productsString);
-            double[] coeff = chemicalEquation.coefficients();
-
-            for (int i = 0; i < coeff.length; i++) {
-                Log.i("read54", coeff[i]+"");
-            }
+            chemicalEquation.balance();
         } catch (InvalidMatrixSizeException e) {
             e.printStackTrace();
         } catch (BalancedEquationError balancedEquationError) {

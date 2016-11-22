@@ -121,4 +121,8 @@ public class Fraction {
         }
         return -1;
     }
+
+    public boolean equalsZero() {
+        return numerator == 0;
+    }
 }

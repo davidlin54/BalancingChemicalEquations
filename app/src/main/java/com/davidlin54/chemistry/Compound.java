@@ -15,7 +15,10 @@ public class Compound {
     private Pattern mElementPattern = Pattern.compile("[A-z][a-z]*");
     private Pattern mAtomsPattern = Pattern.compile("\\d+$");
 
+    private String mCompoundString;
+
     public Compound(String compound) {
+        mCompoundString = compound;
         mElementMap.putAll(parse(compound));
     }
 
@@ -60,7 +63,12 @@ public class Compound {
         return map;
     }
 
-    public Map<Element, Integer> getElementMap() {
+    public Map<Element, Integer> getElements() {
         return mElementMap;
+    }
+
+    @Override
+    public String toString() {
+        return mCompoundString;
     }
 }

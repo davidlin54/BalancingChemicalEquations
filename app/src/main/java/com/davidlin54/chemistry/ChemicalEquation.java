@@ -1,21 +1,27 @@
 package com.davidlin54.chemistry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Created by David on 2016-11-21.
  */
 
 public class ChemicalEquation extends Matrix {
-    private ChemicalEquation(double[] matrix) throws InvalidMatrixSizeException {
+    private Map<Compound, Integer> mReactantMap = new LinkedHashMap<>();
+    private Map<Compound, Integer> mProductMap = new LinkedHashMap<>();
+
+    private ChemicalEquation(Fraction[] matrix) throws InvalidMatrixSizeException {
         super(matrix);
     }
 
-    private ChemicalEquation(double[][] matrix) throws InvalidMatrixSizeException {
+    private ChemicalEquation(Fraction[][] matrix) throws InvalidMatrixSizeException {
         super(matrix);
     }
 
@@ -24,6 +30,9 @@ public class ChemicalEquation extends Matrix {
     }
 
     public static ChemicalEquation buildEquation(List<String> reactantsString, List<String> productsString) throws InvalidMatrixSizeException {
+        Map<Compound, Integer> reactants = new LinkedHashMap<>();
+        Map<Compound, Integer> products = new LinkedHashMap<>();
+
         Set<Element> elementSet = new LinkedHashSet<>();
         List[] elementAtomsList = new List[reactantsString.size() + productsString.size()];
 
@@ -31,14 +40,15 @@ public class ChemicalEquation extends Matrix {
 
         for (String reactantString : reactantsString) {
             Compound compound = new Compound(reactantString);
+            reactants.put(compound, null);
             // get set of all elements in the equation
-            for (Map.Entry<Element, Integer> element : compound.getElementMap().entrySet()) {
+            for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
                 elementSet.add(element.getKey());
             }
 
             List<Integer> atomsList = new ArrayList<>();
             for (Element element : elementSet) {
-                int atoms = compound.getElementMap().get(element) == null ? 0 : compound.getElementMap().get(element);
+                int atoms = compound.getElements().get(element) == null ? 0 : compound.getElements().get(element);
                 atomsList.add(atoms);
             }
 
@@ -48,15 +58,16 @@ public class ChemicalEquation extends Matrix {
 
         for (String productString : productsString) {
             Compound compound = new Compound(productString);
+            products.put(compound, null);
 
             // get set of all elements in the equation
-            for (Map.Entry<Element, Integer> element : compound.getElementMap().entrySet()) {
+            for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
                 elementSet.add(element.getKey());
             }
 
             List<Integer> atomsList = new ArrayList<>();
             for (Element element : elementSet) {
-                int atoms = compound.getElementMap().get(element) == null ? 0 : compound.getElementMap().get(element);
+                int atoms = compound.getElements().get(element) == null ? 0 : compound.getElements().get(element);
                 atomsList.add(atoms);
             }
 
@@ -65,14 +76,21 @@ public class ChemicalEquation extends Matrix {
         }
 
         // build the atoms matrix
-        double[][] atomsMatrix = new double[elementSet.size()][elementAtomsList.length];
+        Fraction[][] atomsMatrix = new Fraction[elementSet.size()][elementAtomsList.length];
         for (int i = 0; i < elementAtomsList.length; i++) {
-            for (int j = 0; j < elementAtomsList[i].size(); j++) {
-                atomsMatrix[j][i] = (int) elementAtomsList[i].get(j);
+            for (int j = 0; j < elementSet.size(); j++) {
+                if (j < elementAtomsList[i].size()) {
+                    atomsMatrix[j][i] = new Fraction((int) elementAtomsList[i].get(j));
+                } else {
+                    atomsMatrix[j][i] = new Fraction(0);
+                }
             }
         }
 
-        return new ChemicalEquation(atomsMatrix);
+        ChemicalEquation equation = new ChemicalEquation(atomsMatrix);
+        equation.mReactantMap = reactants;
+        equation.mProductMap = products;
+        return equation;
     }
 
     // get the nullity of the equation
@@ -81,7 +99,7 @@ public class ChemicalEquation extends Matrix {
     }
 
     // the nullspace of the matrix is the coefficients of the compounds
-    private double[] nullSpace() throws InvalidMatrixSizeException, BalancedEquationError {
+    private Fraction[] nullSpace() throws InvalidMatrixSizeException, BalancedEquationError {
         Matrix rowEchelonForm = rowEchelonForm();
         int rank = rowEchelonForm.rank(true);
 
@@ -92,7 +110,7 @@ public class ChemicalEquation extends Matrix {
             throw new BalancedEquationError(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
         }
 
-        double[] nullSpace = new double[rank];
+        Fraction[] nullSpace = new Fraction[rank];
         for (int i = 0; i < rank; i++) {
             nullSpace[i] = rowEchelonForm.mMatrix[i][mColumns - 1];
         }
@@ -100,45 +118,60 @@ public class ChemicalEquation extends Matrix {
         return nullSpace;
     }
 
-    public double[] coefficients() throws InvalidMatrixSizeException, BalancedEquationError {
-        double[] nullSpace = nullSpace();
-        double[] coefficients = new double[nullSpace.length + 1];
+    public void balance() throws InvalidMatrixSizeException, BalancedEquationError {
+        Fraction[] nullSpace = nullSpace();
+        Fraction[] coefficients = new Fraction[nullSpace.length + 1];
         // add the last coefficient to the list
-        coefficients[nullSpace.length] = -1;
+        coefficients[nullSpace.length] = new Fraction(-1);
 
-        double minCoefficient = Double.MAX_VALUE;
+        long lowestCommonDenominator = 1;
         for (int i = 0; i < nullSpace.length; i++) {
-            double coefficient = nullSpace[i];
-            if (Math.abs(coefficient) < minCoefficient) {
-                minCoefficient = coefficient;
+            Fraction coefficient = nullSpace[i];
+            if (lowestCommonDenominator % coefficient.getDenominator() != 0) {
+                lowestCommonDenominator = findLCM(lowestCommonDenominator, coefficient.getDenominator());
             }
             coefficients[i] = coefficient;
         }
 
-        // divide all coefficients by the smallest until all are integers
+        Fraction lcdFraction = new Fraction(lowestCommonDenominator);
+        // multiply by lowest common denominator then reduce to ensure all are integers
         for (int i = 0; i < coefficients.length; i++) {
-            coefficients[i] /= minCoefficient;
+            coefficients[i] = coefficients[i].multiply(lcdFraction);
+            coefficients[i].reduce();
         }
 
-        boolean isInteger = false;
-        while (!isInteger) {
-            isInteger = true;
-            double lcd = 1;
-            for (int i = 0; i < coefficients.length; i++) {
-                if (coefficients[i] != Math.rint(coefficients[i])) {
-                    lcd /= coefficients[i] - (long) coefficients[i];
-                    break;
-                }
-            }
-
-            for (int i = 0; i < coefficients.length; i++) {
-                coefficients[i] *= lcd;
-                if (coefficients[i] != Math.rint(coefficients[i])) {
-                    isInteger = false;
-                }
-            }
+        int count = 0;
+        for (Compound reactant : mReactantMap.keySet()) {
+            mReactantMap.put(reactant, (int) Math.abs(coefficients[count].getNumerator()));
+            count++;
         }
 
-        return coefficients;
+        for (Compound product : mProductMap.keySet()) {
+            mProductMap.put(product, (int) Math.abs(coefficients[count].getNumerator()));
+            count++;
+        }
+    }
+
+    public Map<Compound, Integer> getReactants() {
+        return mReactantMap;
+    }
+
+    public Map<Compound, Integer> getProducts() {
+        return mProductMap;
+    }
+
+    // find greatest common denominator
+    private long findGCD(long a, long b) {
+        while (b != 0) {
+            long t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
+    }
+
+    // find lease common multiple
+    private long findLCM(long a, long b) {
+        return (a*b)/findGCD(a, b);
     }
 }

@@ -13,16 +13,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        MainPresenterImpl impl = new MainPresenterImpl();
-        List<String> reactant = new ArrayList<>();
-        reactant.add("KI");
-        reactant.add("KClO3");
-        reactant.add("HCl");
-        List<String> product = new ArrayList<>();
-        product.add("I2");
-        product.add("H2O");
-        product.add("KCl");
-        impl.balanceEquation(reactant, product);
     }
 }
