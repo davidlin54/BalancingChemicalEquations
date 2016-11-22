@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Balancing Chemical Equations</string>
+
+    <string name="compound_format_error">%s is not properly formatted.</string>
+    <string name="balanced_cannot_error">This equation cannot be balanced.</string>
+    <string name="balanced_infinite_error">There are infinite solutions for this equation.</string>
+</resources>
