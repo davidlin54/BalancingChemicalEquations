@@ -1,12 +1,8 @@
 package com.davidlin54.chemistry;
 
-import android.util.Log;
+import com.davidlin54.chemistry.models.ChemicalEquation;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by David on 2016-11-15.

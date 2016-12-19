@@ -1,4 +1,4 @@
-package com.davidlin54.chemistry;
+package com.davidlin54.chemistry.models;
 
 /**
  * Created by David on 2016-11-13.

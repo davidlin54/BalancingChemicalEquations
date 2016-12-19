@@ -1,4 +1,7 @@
-package com.davidlin54.chemistry;
+package com.davidlin54.chemistry.models;
+
+import com.davidlin54.chemistry.BalancingChemicalEquations;
+import com.davidlin54.chemistry.R;
 
 import java.util.HashMap;
 import java.util.Map;

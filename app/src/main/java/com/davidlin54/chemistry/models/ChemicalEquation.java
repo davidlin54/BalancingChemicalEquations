@@ -1,13 +1,16 @@
-package com.davidlin54.chemistry;
+package com.davidlin54.chemistry.models;
+
+import com.davidlin54.chemistry.BalancedEquationError;
+import com.davidlin54.chemistry.BalancingChemicalEquations;
+import com.davidlin54.chemistry.InvalidMatrixSizeException;
+import com.davidlin54.chemistry.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Created by David on 2016-11-21.

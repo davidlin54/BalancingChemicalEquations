@@ -1,6 +1,6 @@
-package com.davidlin54.chemistry;
+package com.davidlin54.chemistry.models;
 
-import android.util.Log;
+import com.davidlin54.chemistry.InvalidMatrixSizeException;
 
 import java.util.Arrays;
 
