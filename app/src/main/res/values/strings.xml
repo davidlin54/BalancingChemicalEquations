@@ -5,6 +5,8 @@
     <string name="balanced_cannot_error">This equation cannot be balanced.</string>
     <string name="balanced_infinite_error">There are infinite solutions for this equation.</string>
     <string name="element_not_exist_error">%s is not a valid Element.</string>
+    <string name="reactant_empty_error">Reactants are empty or not formatted correctly.</string>
+    <string name="products_empty_error">Products are empty or not formatted correctly.</string>
 
     <string name="reactants">Reactants</string>
     <string name="products">Products</string>

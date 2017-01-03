@@ -23,6 +23,20 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void balanceEquation(String reactantsString, String productsString) {
+        // check if reactants or products is an empty string
+        if (reactantsString.replace(" ", "").replace("\\+", "").equals("") ||
+                productsString.replace(" ", "").replace("\\+", "").equals("")) {
+            if (reactantsString.replace(" ", "").replace("\\+", "").equals("")) {
+                mView.setError(R.id.layoutReactants, R.string.reactant_empty_error);
+            }
+
+            if (productsString.replace(" ", "").replace("\\+", "").equals("")) {
+                mView.setError(R.id.layoutProducts, R.string.products_empty_error);
+            }
+
+            return;
+        }
+
         ChemicalEquation chemicalEquation = null;
         try {
              chemicalEquation = ChemicalEquation.buildEquation(

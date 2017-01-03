@@ -6,4 +6,5 @@ package com.davidlin54.chemistry;
 
 public interface MainView {
     void setResults(String result);
+    void setError(int resId, int errorTextResId);
 }
