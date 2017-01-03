@@ -3,6 +3,7 @@ package com.davidlin54.chemistry;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -45,6 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void setResults(String result) {
-        mResults.setText(result);
+        mResults.setText(Html.fromHtml(result));
     }
 }

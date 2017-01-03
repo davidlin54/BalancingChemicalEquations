@@ -42,7 +42,7 @@ public class MainPresenterImpl implements MainPresenter {
                 }
                 Map.Entry<Compound, Integer> entry = iterator.next();
 
-                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + entry.getKey().toString();
+                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + formatCompound(entry.getKey().toString());
             }
 
             iterator = products.entrySet().iterator();
@@ -54,7 +54,7 @@ public class MainPresenterImpl implements MainPresenter {
                 }
                 Map.Entry<Compound, Integer> entry = iterator.next();
 
-                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + entry.getKey().toString();
+                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + formatCompound(entry.getKey().toString());
             }
 
             mView.setResults(result);
@@ -62,6 +62,33 @@ public class MainPresenterImpl implements MainPresenter {
             e.printStackTrace();
             mView.setResults(e.getMessage());
         }
+    }
+
+    private String formatCompound(final String compound) {
+        String resultString = "";
+        boolean isNumber = false;
+        for (int i = 0; i < compound.length(); i++) {
+            char c = compound.charAt(i);
+
+            if (c >= '0' && c <= '9') {
+                if (!isNumber) {
+                    resultString += "<sub>";
+                    isNumber = true;
+                }
+            } else {
+                if (isNumber) {
+                    resultString += "</sub>";
+                    isNumber = false;
+                }
+            }
+            resultString += c;
+        }
+
+        if (isNumber) {
+            resultString += "</sub>";
+        }
+
+        return resultString;
     }
 
 }
