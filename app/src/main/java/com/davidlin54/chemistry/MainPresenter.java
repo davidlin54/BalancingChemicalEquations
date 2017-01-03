@@ -7,5 +7,5 @@ import java.util.List;
  */
 
 public interface MainPresenter {
-    void balanceEquation(List<String> reactantsString, List<String> productsString);
+    void balanceEquation(String reactantsString, String productsString);
 }

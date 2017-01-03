@@ -16,6 +16,7 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/etReactants"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/reactants"/>
@@ -27,10 +28,23 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/etProducts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/products"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnBalance"
+        android:text="@string/balance_equation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

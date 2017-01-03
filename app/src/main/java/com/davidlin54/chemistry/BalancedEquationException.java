@@ -4,11 +4,11 @@ package com.davidlin54.chemistry;
  * Created by David on 2016-11-21.
  */
 
-public class BalancedEquationError extends Exception {
+public class BalancedEquationException extends Exception {
 
     private String mMessage;
 
-    public BalancedEquationError(String message) {
+    public BalancedEquationException(String message) {
         mMessage = message;
     }
 

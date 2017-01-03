@@ -1,6 +1,6 @@
 package com.davidlin54.chemistry.models;
 
-import com.davidlin54.chemistry.BalancedEquationError;
+import com.davidlin54.chemistry.BalancedEquationException;
 import com.davidlin54.chemistry.BalancingChemicalEquations;
 import com.davidlin54.chemistry.InvalidMatrixSizeException;
 import com.davidlin54.chemistry.R;
@@ -32,12 +32,12 @@ public class ChemicalEquation extends Matrix {
         super(toCopy);
     }
 
-    public static ChemicalEquation buildEquation(List<String> reactantsString, List<String> productsString) throws InvalidMatrixSizeException {
+    public static ChemicalEquation buildEquation(String[] reactantsString, String[] productsString) throws InvalidMatrixSizeException, BalancedEquationException {
         Map<Compound, Integer> reactants = new LinkedHashMap<>();
         Map<Compound, Integer> products = new LinkedHashMap<>();
 
-        Set<Element> elementSet = new LinkedHashSet<>();
-        List[] elementAtomsList = new List[reactantsString.size() + productsString.size()];
+        Map<Element, Boolean> elementSet = new LinkedHashMap<>();
+        List[] elementAtomsList = new List[reactantsString.length + productsString.length];
 
         int count = 0;
 
@@ -46,11 +46,11 @@ public class ChemicalEquation extends Matrix {
             reactants.put(compound, null);
             // get set of all elements in the equation
             for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
-                elementSet.add(element.getKey());
+                elementSet.put(element.getKey(), false);
             }
 
             List<Integer> atomsList = new ArrayList<>();
-            for (Element element : elementSet) {
+            for (Element element : elementSet.keySet()) {
                 int atoms = compound.getElements().get(element) == null ? 0 : compound.getElements().get(element);
                 atomsList.add(atoms);
             }
@@ -63,19 +63,32 @@ public class ChemicalEquation extends Matrix {
             Compound compound = new Compound(productString);
             products.put(compound, null);
 
-            // get set of all elements in the equation
             for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
-                elementSet.add(element.getKey());
+                // check if products introduce a new element; if so, throw error
+                if (!elementSet.containsKey(element.getKey())) {
+                    throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                }
             }
 
             List<Integer> atomsList = new ArrayList<>();
-            for (Element element : elementSet) {
-                int atoms = compound.getElements().get(element) == null ? 0 : compound.getElements().get(element);
+            for (Element element : elementSet.keySet()) {
+                // used to check if product contains all the elements in reactant
+                int atoms = 0;
+                if (compound.getElements().get(element) != null) {
+                    atoms = compound.getElements().get(element);
+                    elementSet.put(element, true);
+                }
                 atomsList.add(atoms);
             }
 
             elementAtomsList[count] = atomsList;
             count++;
+        }
+
+        for (Map.Entry<Element, Boolean> entry : elementSet.entrySet()) {
+            if (!entry.getValue()) {
+                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+            }
         }
 
         // build the atoms matrix
@@ -102,15 +115,15 @@ public class ChemicalEquation extends Matrix {
     }
 
     // the nullspace of the matrix is the coefficients of the compounds
-    private Fraction[] nullSpace() throws InvalidMatrixSizeException, BalancedEquationError {
+    private Fraction[] nullSpace() throws InvalidMatrixSizeException, BalancedEquationException {
         Matrix rowEchelonForm = rowEchelonForm();
         int rank = rowEchelonForm.rank(true);
 
         // check if equation cannot be balanced or there are infinite solutions
         if (nullity(rank) == 0) {
-            throw new BalancedEquationError(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+            throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
         } else if (nullity(rank) >= 2) {
-            throw new BalancedEquationError(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
+            throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
         }
 
         Fraction[] nullSpace = new Fraction[rank];
@@ -121,7 +134,7 @@ public class ChemicalEquation extends Matrix {
         return nullSpace;
     }
 
-    public void balance() throws InvalidMatrixSizeException, BalancedEquationError {
+    public void balance() throws InvalidMatrixSizeException, BalancedEquationException {
         Fraction[] nullSpace = nullSpace();
         Fraction[] coefficients = new Fraction[nullSpace.length + 1];
         // add the last coefficient to the list

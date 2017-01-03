@@ -1,8 +1,13 @@
 package com.davidlin54.chemistry;
 
-import com.davidlin54.chemistry.models.ChemicalEquation;
+import android.util.Log;
 
+import com.davidlin54.chemistry.models.ChemicalEquation;
+import com.davidlin54.chemistry.models.Compound;
+
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by David on 2016-11-15.
@@ -10,15 +15,52 @@ import java.util.List;
 
 public class MainPresenterImpl implements MainPresenter {
 
+    private MainView mView;
+
+    public MainPresenterImpl(MainView view) {
+        mView = view;
+    }
+
     @Override
-    public void balanceEquation(List<String> reactantsString, List<String> productsString) {
+    public void balanceEquation(String reactantsString, String productsString) {
+        ChemicalEquation chemicalEquation = null;
         try {
-            ChemicalEquation chemicalEquation = ChemicalEquation.buildEquation(reactantsString, productsString);
+             chemicalEquation = ChemicalEquation.buildEquation(
+                    reactantsString.replace(" ", "").split("\\+"),
+                    productsString.replace(" ", "").split("\\+"));
             chemicalEquation.balance();
-        } catch (InvalidMatrixSizeException e) {
+            Map<Compound, Integer> reactants = chemicalEquation.getReactants();
+            Map<Compound, Integer> products = chemicalEquation.getProducts();
+
+            // get result string
+            String result = "";
+
+            Iterator<Map.Entry<Compound, Integer>> iterator = reactants.entrySet().iterator();
+            for (int i = 0; i < reactants.size(); i++) {
+                if (i != 0) {
+                    result += " + ";
+                }
+                Map.Entry<Compound, Integer> entry = iterator.next();
+
+                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + entry.getKey().toString();
+            }
+
+            iterator = products.entrySet().iterator();
+            for (int i = 0; i < products.size(); i++) {
+                if (i != 0) {
+                    result += " + ";
+                } else {
+                    result += " → ";
+                }
+                Map.Entry<Compound, Integer> entry = iterator.next();
+
+                result += (entry.getValue() != 1 ? entry.getValue().toString() : "") + entry.getKey().toString();
+            }
+
+            mView.setResults(result);
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (BalancedEquationError balancedEquationError) {
-            balancedEquationError.printStackTrace();
+            mView.setResults(e.getMessage());
         }
     }
 

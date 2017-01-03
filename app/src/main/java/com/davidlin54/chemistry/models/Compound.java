@@ -1,5 +1,6 @@
 package com.davidlin54.chemistry.models;
 
+import com.davidlin54.chemistry.BalancedEquationException;
 import com.davidlin54.chemistry.BalancingChemicalEquations;
 import com.davidlin54.chemistry.R;
 
@@ -20,12 +21,12 @@ public class Compound {
 
     private String mCompoundString;
 
-    public Compound(String compound) {
+    public Compound(String compound) throws BalancedEquationException {
         mCompoundString = compound;
         mElementMap.putAll(parse(compound));
     }
 
-    private Map<Element, Integer> parse(String compound) throws IllegalArgumentException {
+    private Map<Element, Integer> parse(String compound) throws IllegalArgumentException, BalancedEquationException {
         Map<Element, Integer> map = new HashMap<>();
 
         int matchedLength = 0;
@@ -53,8 +54,12 @@ public class Compound {
                 Matcher elementMatcher = mElementPattern.matcher(match);
                 elementMatcher.find();
 
-                Element element = Element.valueOf(elementMatcher.group());
-                map.put(element, (map.get(element) == null ? 0 : map.get(element)) + atoms);
+                try {
+                    Element element = Element.valueOf(elementMatcher.group());
+                    map.put(element, (map.get(element) == null ? 0 : map.get(element)) + atoms);
+                } catch (IllegalArgumentException e) {
+                    throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.element_not_exist_error, elementMatcher.group()));
+                }
             }
         }
 
