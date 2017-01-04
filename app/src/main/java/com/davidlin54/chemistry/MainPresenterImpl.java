@@ -86,12 +86,12 @@ public class MainPresenterImpl implements MainPresenter {
 
             if (c >= '0' && c <= '9') {
                 if (!isNumber) {
-                    resultString += "<sub>";
+                    resultString += "<sub><small><small>";
                     isNumber = true;
                 }
             } else {
                 if (isNumber) {
-                    resultString += "</sub>";
+                    resultString += "</small></small></sub>";
                     isNumber = false;
                 }
             }
@@ -99,7 +99,7 @@ public class MainPresenterImpl implements MainPresenter {
         }
 
         if (isNumber) {
-            resultString += "</sub>";
+            resultString += "</small></small></sub>";
         }
 
         return resultString;
