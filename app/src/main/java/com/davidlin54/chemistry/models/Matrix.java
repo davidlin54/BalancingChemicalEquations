@@ -1,6 +1,6 @@
 package com.davidlin54.chemistry.models;
 
-import com.davidlin54.chemistry.InvalidMatrixSizeException;
+import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
 
 import java.util.Arrays;
 

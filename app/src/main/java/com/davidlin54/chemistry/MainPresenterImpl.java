@@ -2,6 +2,8 @@ package com.davidlin54.chemistry;
 
 import android.util.Log;
 
+import com.davidlin54.chemistry.exceptions.ProductException;
+import com.davidlin54.chemistry.exceptions.ReactantException;
 import com.davidlin54.chemistry.models.ChemicalEquation;
 import com.davidlin54.chemistry.models.Compound;
 
@@ -72,8 +74,11 @@ public class MainPresenterImpl implements MainPresenter {
             }
 
             mView.setResults(result);
+        } catch (ReactantException e) {
+            mView.setError(R.id.layoutReactants, e.getMessage());
+        } catch (ProductException e) {
+            mView.setError(R.id.layoutProducts, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
             mView.setResults(e.getMessage());
         }
     }

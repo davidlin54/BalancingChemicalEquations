@@ -97,11 +97,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void setError(int resId, int errorTextResId) {
+        setError(resId, getString(errorTextResId));
+    }
+
+    @Override
+    public void setError(int resId, String errorText) {
         if (resId == R.id.layoutReactants) {
-            mReactantsLayout.setError(getString(errorTextResId));
+            mReactantsLayout.setError(errorText);
         } else {
-            mProductsLayout.setError(getString(errorTextResId));
+            mProductsLayout.setError(errorText);
         }
+
+        setResults("");
     }
 
     private void clearInputFocus() {

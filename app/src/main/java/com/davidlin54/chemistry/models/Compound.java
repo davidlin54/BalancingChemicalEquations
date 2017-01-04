@@ -1,6 +1,6 @@
 package com.davidlin54.chemistry.models;
 
-import com.davidlin54.chemistry.BalancedEquationException;
+import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.BalancingChemicalEquations;
 import com.davidlin54.chemistry.R;
 
@@ -26,7 +26,7 @@ public class Compound {
         mElementMap.putAll(parse(compound));
     }
 
-    private Map<Element, Integer> parse(String compound) throws IllegalArgumentException, BalancedEquationException {
+    private Map<Element, Integer> parse(String compound) throws IllegalArgumentException {
         Map<Element, Integer> map = new HashMap<>();
 
         int matchedLength = 0;
@@ -58,7 +58,7 @@ public class Compound {
                     Element element = Element.valueOf(elementMatcher.group());
                     map.put(element, (map.get(element) == null ? 0 : map.get(element)) + atoms);
                 } catch (IllegalArgumentException e) {
-                    throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.element_not_exist_error, elementMatcher.group()));
+                    throw new IllegalArgumentException(BalancingChemicalEquations.getContext().getString(R.string.element_not_exist_error, elementMatcher.group()));
                 }
             }
         }

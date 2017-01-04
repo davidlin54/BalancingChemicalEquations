@@ -1,8 +1,9 @@
 package com.davidlin54.chemistry;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.davidlin54.chemistry.exceptions.BalancedEquationException;
+import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
 import com.davidlin54.chemistry.models.ChemicalEquation;
 import com.davidlin54.chemistry.models.Compound;
 

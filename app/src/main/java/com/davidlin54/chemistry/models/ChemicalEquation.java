@@ -1,16 +1,16 @@
 package com.davidlin54.chemistry.models;
 
-import com.davidlin54.chemistry.BalancedEquationException;
+import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.BalancingChemicalEquations;
-import com.davidlin54.chemistry.InvalidMatrixSizeException;
+import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
 import com.davidlin54.chemistry.R;
+import com.davidlin54.chemistry.exceptions.ProductException;
+import com.davidlin54.chemistry.exceptions.ReactantException;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by David on 2016-11-21.
@@ -32,7 +32,7 @@ public class ChemicalEquation extends Matrix {
         super(toCopy);
     }
 
-    public static ChemicalEquation buildEquation(String[] reactantsString, String[] productsString) throws InvalidMatrixSizeException, BalancedEquationException {
+    public static ChemicalEquation buildEquation(String[] reactantsString, String[] productsString) throws InvalidMatrixSizeException, BalancedEquationException, ReactantException, ProductException {
         Map<Compound, Integer> reactants = new LinkedHashMap<>();
         Map<Compound, Integer> products = new LinkedHashMap<>();
 
@@ -42,7 +42,14 @@ public class ChemicalEquation extends Matrix {
         int count = 0;
 
         for (String reactantString : reactantsString) {
-            Compound compound = new Compound(reactantString);
+            // check if compound is valid, if not throw a reactant exception
+            Compound compound = null;
+            try {
+                compound = new Compound(reactantString);
+            } catch (IllegalArgumentException e) {
+                throw new ReactantException(e.getMessage());
+            }
+
             reactants.put(compound, null);
             // get set of all elements in the equation
             for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
@@ -60,7 +67,14 @@ public class ChemicalEquation extends Matrix {
         }
 
         for (String productString : productsString) {
-            Compound compound = new Compound(productString);
+            // check if compound is valid, if not throw a product exception
+            Compound compound = null;
+            try {
+                compound = new Compound(productString);
+            } catch (IllegalArgumentException e) {
+                throw new ProductException(e.getMessage());
+            }
+
             products.put(compound, null);
 
             for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
