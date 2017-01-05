@@ -5,9 +5,9 @@ android {
     buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "com.davidlin54.chemistry"
-        minSdkVersion 16
+        minSdkVersion 9
         targetSdkVersion 25
-        versionCode 3
+        versionCode 5
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

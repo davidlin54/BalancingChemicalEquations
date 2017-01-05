@@ -172,11 +172,19 @@ public class ChemicalEquation extends Matrix {
 
         int count = 0;
         for (Compound reactant : mReactantMap.keySet()) {
-            mReactantMap.put(reactant, (int) Math.abs(coefficients[count].getNumerator()));
+            // if coefficient has negative numerator, cannot be balanced
+            if (coefficients[count].getNumerator() < 0) {
+                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+            }
+            mReactantMap.put(reactant, (int) coefficients[count].getNumerator());
             count++;
         }
 
         for (Compound product : mProductMap.keySet()) {
+            // if coefficient has positive or 0 as its numerator, cannot be balanced
+            if (coefficients[count].getNumerator() >= 0) {
+                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+            }
             mProductMap.put(product, (int) Math.abs(coefficients[count].getNumerator()));
             count++;
         }

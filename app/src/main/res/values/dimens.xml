@@ -6,4 +6,5 @@
     <dimen name="button_height">36dp</dimen>
     <dimen name="button_margin">6dp</dimen>
     <dimen name="result_text_size">16sp</dimen>
+    <dimen name="result_extra_space">4dp</dimen>
 </resources>
