@@ -16,12 +16,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/reactants"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@android:color/black"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/layoutReactants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         app:hintEnabled="false">
 
         <android.support.design.widget.TextInputEditText
@@ -39,7 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/products"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@android:color/black"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/layoutProducts"
@@ -73,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/result_text_size"
+        android:textColor="@android:color/black"
         android:lineSpacingExtra="@dimen/result_extra_space"/>
 
 </LinearLayout>
