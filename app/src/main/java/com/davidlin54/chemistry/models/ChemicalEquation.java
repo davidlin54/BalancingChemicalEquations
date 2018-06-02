@@ -4,6 +4,7 @@ import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.BalancingChemicalEquations;
 import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
 import com.davidlin54.chemistry.R;
+import com.davidlin54.chemistry.exceptions.NullSpaceException;
 import com.davidlin54.chemistry.exceptions.ProductException;
 import com.davidlin54.chemistry.exceptions.ReactantException;
 
@@ -123,33 +124,19 @@ public class ChemicalEquation extends Matrix {
         return equation;
     }
 
-    // get the nullity of the equation
-    private int nullity(int rank) {
-        return mColumns - rank;
-    }
-
-    // the nullspace of the matrix is the coefficients of the compounds
-    private Fraction[] nullSpace() throws InvalidMatrixSizeException, BalancedEquationException {
-        Matrix rowEchelonForm = rowEchelonForm();
-        int rank = rowEchelonForm.rank(true);
-
-        // check if equation cannot be balanced or there are infinite solutions
-        if (nullity(rank) == 0) {
-            throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
-        } else if (nullity(rank) >= 2) {
-            throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
-        }
-
-        Fraction[] nullSpace = new Fraction[rank];
-        for (int i = 0; i < rank; i++) {
-            nullSpace[i] = rowEchelonForm.mMatrix[i][mColumns - 1];
-        }
-
-        return nullSpace;
-    }
-
     public void balance() throws InvalidMatrixSizeException, BalancedEquationException {
-        Fraction[] nullSpace = nullSpace();
+        Fraction[] nullSpace = null;
+        try {
+            // the nullspace of the matrix is the coefficients of the compounds
+            nullSpace = nullSpace();
+        } catch (NullSpaceException e) {
+            if (e.getNullity() == 0) {
+                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+            } else {
+                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
+            }
+        }
+
         Fraction[] coefficients = new Fraction[nullSpace.length + 1];
         // add the last coefficient to the list
         coefficients[nullSpace.length] = new Fraction(-1);
@@ -196,16 +183,6 @@ public class ChemicalEquation extends Matrix {
 
     public Map<Compound, Integer> getProducts() {
         return mProductMap;
-    }
-
-    // find greatest common denominator
-    private long findGCD(long a, long b) {
-        while (b != 0) {
-            long t = b;
-            b = a % b;
-            a = t;
-        }
-        return a;
     }
 
     // find lease common multiple

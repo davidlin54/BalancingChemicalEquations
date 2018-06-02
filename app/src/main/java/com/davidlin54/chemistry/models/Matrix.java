@@ -1,6 +1,7 @@
 package com.davidlin54.chemistry.models;
 
 import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
+import com.davidlin54.chemistry.exceptions.NullSpaceException;
 
 import java.util.Arrays;
 
@@ -283,6 +284,39 @@ public class Matrix {
             return rank();
         }
         return rowEchelonForm().rank();
+    }
+
+    // get the nullity of the equation
+    public int nullity(int rank) {
+        return mColumns - rank;
+    }
+
+    public Fraction[] nullSpace() throws InvalidMatrixSizeException, NullSpaceException {
+        Matrix rowEchelonForm = rowEchelonForm();
+        int rank = rowEchelonForm.rank(true);
+        int nullity = nullity(rank);
+
+        // check if equation cannot be balanced or there are infinite solutions
+        if (nullity == 0 || nullity >= 2) {
+            throw new NullSpaceException(nullity);
+        }
+
+        Fraction[] nullSpace = new Fraction[rank];
+        for (int i = 0; i < rank; i++) {
+            nullSpace[i] = rowEchelonForm.mMatrix[i][mColumns - 1];
+        }
+
+        return nullSpace;
+    }
+
+    // find greatest common denominator
+    protected long findGCD(long a, long b) {
+        while (b != 0) {
+            long t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
     }
 
     @Override
