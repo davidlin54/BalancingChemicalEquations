@@ -4,6 +4,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
+import com.davidlin54.chemistry.exceptions.ProductException;
+import com.davidlin54.chemistry.exceptions.ReactantException;
 import com.davidlin54.chemistry.models.ChemicalEquation;
 import com.davidlin54.chemistry.models.Compound;
 
@@ -22,7 +24,7 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class BalancingEquationsTest {
     @Test
-    public void testCorrectEquations() throws InvalidMatrixSizeException, BalancedEquationException {
+    public void testCorrectEquations() throws InvalidMatrixSizeException, BalancedEquationException, ReactantException, ProductException {
         final String[] reactants = {
                 "Fe + Cl2",
                 "KMnO4 + HCl",
@@ -88,6 +90,10 @@ public class BalancingEquationsTest {
                 throw new AssertionError("Equation has infinite solutions, expected exception");
             } catch (BalancedEquationException e) {
                 assertEquals(e.getMessage(), "There are infinite solutions for this equation.");
+            } catch (ProductException e) {
+                e.printStackTrace();
+            } catch (ReactantException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -112,6 +118,10 @@ public class BalancingEquationsTest {
                 throw new AssertionError("Equation cannot be balanced, expected exception");
             } catch (BalancedEquationException e) {
                 assertEquals(e.getMessage(), "This equation cannot be balanced.");
+            } catch (ProductException e) {
+                e.printStackTrace();
+            } catch (ReactantException e) {
+                e.printStackTrace();
             }
         }
     }
