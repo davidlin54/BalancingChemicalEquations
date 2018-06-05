@@ -1,8 +1,6 @@
 package com.davidlin54.chemistry.models;
 
-import com.davidlin54.chemistry.exceptions.BalancedEquationException;
-import com.davidlin54.chemistry.BalancingChemicalEquations;
-import com.davidlin54.chemistry.R;
+import com.davidlin54.chemistry.exceptions.CompoundParsingException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +19,12 @@ public class Compound {
 
     private String mCompoundString;
 
-    public Compound(String compound) throws BalancedEquationException {
+    public Compound(String compound) throws CompoundParsingException {
         mCompoundString = compound;
         mElementMap.putAll(parse(compound));
     }
 
-    private Map<Element, Integer> parse(String compound) throws IllegalArgumentException {
+    private Map<Element, Integer> parse(String compound) throws CompoundParsingException {
         Map<Element, Integer> map = new HashMap<>();
 
         int matchedLength = 0;
@@ -58,14 +56,14 @@ public class Compound {
                     Element element = Element.valueOf(elementMatcher.group());
                     map.put(element, (map.get(element) == null ? 0 : map.get(element)) + atoms);
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException(BalancingChemicalEquations.getContext().getString(R.string.element_not_exist_error, elementMatcher.group()));
+                    throw new CompoundParsingException(CompoundParsingException.CompoundParsingExceptionType.NON_EXISTENT_ELEMENT, elementMatcher.group());
                 }
             }
         }
 
         // if mismatched, throw exception
         if (matchedLength != compound.length()) {
-            throw new IllegalArgumentException(BalancingChemicalEquations.getContext().getString(R.string.compound_format_error, compound));
+            throw new CompoundParsingException(CompoundParsingException.CompoundParsingExceptionType.COMPOUND_FORMATTING, compound);
         }
 
         return map;

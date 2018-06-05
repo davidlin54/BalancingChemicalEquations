@@ -1,9 +1,8 @@
 package com.davidlin54.chemistry.models;
 
 import com.davidlin54.chemistry.exceptions.BalancedEquationException;
-import com.davidlin54.chemistry.BalancingChemicalEquations;
+import com.davidlin54.chemistry.exceptions.CompoundParsingException;
 import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
-import com.davidlin54.chemistry.R;
 import com.davidlin54.chemistry.exceptions.NullSpaceException;
 import com.davidlin54.chemistry.exceptions.ProductException;
 import com.davidlin54.chemistry.exceptions.ReactantException;
@@ -47,8 +46,8 @@ public class ChemicalEquation extends Matrix {
             Compound compound = null;
             try {
                 compound = new Compound(reactantString);
-            } catch (IllegalArgumentException e) {
-                throw new ReactantException(e.getMessage());
+            } catch (CompoundParsingException e) {
+                throw new ReactantException(e);
             }
 
             reactants.put(compound, null);
@@ -72,8 +71,8 @@ public class ChemicalEquation extends Matrix {
             Compound compound = null;
             try {
                 compound = new Compound(productString);
-            } catch (IllegalArgumentException e) {
-                throw new ProductException(e.getMessage());
+            } catch (CompoundParsingException e) {
+                throw new ProductException(e);
             }
 
             products.put(compound, null);
@@ -81,7 +80,7 @@ public class ChemicalEquation extends Matrix {
             for (Map.Entry<Element, Integer> element : compound.getElements().entrySet()) {
                 // check if products introduce a new element; if so, throw error
                 if (!elementSet.containsKey(element.getKey())) {
-                    throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                    throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
                 }
             }
 
@@ -102,7 +101,7 @@ public class ChemicalEquation extends Matrix {
 
         for (Map.Entry<Element, Boolean> entry : elementSet.entrySet()) {
             if (!entry.getValue()) {
-                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
             }
         }
 
@@ -131,9 +130,9 @@ public class ChemicalEquation extends Matrix {
             nullSpace = nullSpace();
         } catch (NullSpaceException e) {
             if (e.getNullity() == 0) {
-                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
             } else {
-                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_infinite_error));
+                throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.INFINITE_SOLUTIONS);
             }
         }
 
@@ -161,7 +160,7 @@ public class ChemicalEquation extends Matrix {
         for (Compound reactant : mReactantMap.keySet()) {
             // if coefficient has negative numerator, cannot be balanced
             if (coefficients[count].getNumerator() < 0) {
-                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
             }
             mReactantMap.put(reactant, (int) coefficients[count].getNumerator());
             count++;
@@ -170,7 +169,7 @@ public class ChemicalEquation extends Matrix {
         for (Compound product : mProductMap.keySet()) {
             // if coefficient has positive or 0 as its numerator, cannot be balanced
             if (coefficients[count].getNumerator() >= 0) {
-                throw new BalancedEquationException(BalancingChemicalEquations.getContext().getString(R.string.balanced_cannot_error));
+                throw new BalancedEquationException(BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
             }
             mProductMap.put(product, (int) Math.abs(coefficients[count].getNumerator()));
             count++;

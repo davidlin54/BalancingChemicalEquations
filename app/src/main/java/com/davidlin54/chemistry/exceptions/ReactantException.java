@@ -5,14 +5,13 @@ package com.davidlin54.chemistry.exceptions;
  */
 
 public class ReactantException extends Exception {
-    private String mMessage;
+    private CompoundParsingException mException;
 
-    public ReactantException(String message) {
-        mMessage = message;
+    public ReactantException(CompoundParsingException exception) {
+        mException = exception;
     }
 
-    @Override
-    public String getMessage() {
-        return mMessage;
+    public CompoundParsingException getException() {
+        return mException;
     }
 }

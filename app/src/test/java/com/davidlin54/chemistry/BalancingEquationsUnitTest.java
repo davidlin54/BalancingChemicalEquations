@@ -1,7 +1,5 @@
 package com.davidlin54.chemistry;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.exceptions.InvalidMatrixSizeException;
 import com.davidlin54.chemistry.exceptions.ProductException;
@@ -10,19 +8,13 @@ import com.davidlin54.chemistry.models.ChemicalEquation;
 import com.davidlin54.chemistry.models.Compound;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-/**
- * Created by David on 2017-01-03.
- */
-
-@RunWith(AndroidJUnit4.class)
-public class BalancingEquationsTest {
+public class BalancingEquationsUnitTest  {
     @Test
     public void testCorrectEquations() throws InvalidMatrixSizeException, BalancedEquationException, ReactantException, ProductException {
         final String[] reactants = {
@@ -89,7 +81,7 @@ public class BalancingEquationsTest {
 
                 throw new AssertionError("Equation has infinite solutions, expected exception");
             } catch (BalancedEquationException e) {
-                assertEquals(e.getMessage(), "There are infinite solutions for this equation.");
+                assertEquals(e.getExceptionType(), BalancedEquationException.BalancedEquationExceptionType.INFINITE_SOLUTIONS);
             } catch (ProductException e) {
                 e.printStackTrace();
             } catch (ReactantException e) {
@@ -117,7 +109,7 @@ public class BalancingEquationsTest {
 
                 throw new AssertionError("Equation cannot be balanced, expected exception");
             } catch (BalancedEquationException e) {
-                assertEquals(e.getMessage(), "This equation cannot be balanced.");
+                assertEquals(e.getExceptionType(), BalancedEquationException.BalancedEquationExceptionType.CAN_NOT_BALANCE);
             } catch (ProductException e) {
                 e.printStackTrace();
             } catch (ReactantException e) {

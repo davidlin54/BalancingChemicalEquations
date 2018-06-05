@@ -5,14 +5,13 @@ package com.davidlin54.chemistry.exceptions;
  */
 
 public class ProductException extends Exception {
-    private String mMessage;
+    private CompoundParsingException mException;
 
-    public ProductException(String message) {
-        mMessage = message;
+    public ProductException(CompoundParsingException exception) {
+        mException = exception;
     }
 
-    @Override
-    public String getMessage() {
-        return mMessage;
+    public CompoundParsingException getException() {
+        return mException;
     }
 }

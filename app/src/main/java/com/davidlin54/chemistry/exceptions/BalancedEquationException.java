@@ -6,14 +6,17 @@ package com.davidlin54.chemistry.exceptions;
 
 public class BalancedEquationException extends Exception {
 
-    private String mMessage;
+    private BalancedEquationExceptionType mExceptionType;
 
-    public BalancedEquationException(String message) {
-        mMessage = message;
+    public enum BalancedEquationExceptionType {
+        INFINITE_SOLUTIONS, CAN_NOT_BALANCE
     }
 
-    @Override
-    public String getMessage() {
-        return mMessage;
+    public BalancedEquationException(BalancedEquationExceptionType type) {
+        mExceptionType = type;
+    }
+
+    public BalancedEquationExceptionType getExceptionType() {
+        return mExceptionType;
     }
 }

@@ -1,7 +1,9 @@
 package com.davidlin54.chemistry;
 
+import android.content.res.Resources;
 import android.util.Log;
 
+import com.davidlin54.chemistry.exceptions.BalancedEquationException;
 import com.davidlin54.chemistry.exceptions.ProductException;
 import com.davidlin54.chemistry.exceptions.ReactantException;
 import com.davidlin54.chemistry.models.ChemicalEquation;
@@ -75,9 +77,36 @@ public class MainPresenterImpl implements MainPresenter {
 
             mView.setResults(result);
         } catch (ReactantException e) {
-            mView.setError(R.id.layoutReactants, e.getMessage());
+            switch (e.getException().getExceptionType()) {
+                case NON_EXISTENT_ELEMENT:
+                    mView.setError(R.id.layoutReactants, Resources.getSystem().getString(
+                            R.string.element_not_exist_error, e.getException().getExceptionText()));
+                    break;
+                case COMPOUND_FORMATTING:
+                    mView.setError(R.id.layoutReactants, Resources.getSystem().getString(
+                            R.string.compound_format_error, e.getException().getExceptionText()));
+                    break;
+            }
         } catch (ProductException e) {
-            mView.setError(R.id.layoutProducts, e.getMessage());
+            switch (e.getException().getExceptionType()) {
+                case NON_EXISTENT_ELEMENT:
+                    mView.setError(R.id.layoutProducts, Resources.getSystem().getString(
+                            R.string.element_not_exist_error, e.getException().getExceptionText()));
+                    break;
+                case COMPOUND_FORMATTING:
+                    mView.setError(R.id.layoutProducts, Resources.getSystem().getString(
+                            R.string.compound_format_error, e.getException().getExceptionText()));
+                    break;
+            }
+        } catch (BalancedEquationException e) {
+            switch (e.getExceptionType()) {
+                case CAN_NOT_BALANCE:
+                    mView.setResults(Resources.getSystem().getString(R.string.balanced_cannot_error));
+                    break;
+                case INFINITE_SOLUTIONS:
+                    mView.setResults(Resources.getSystem().getString(R.string.balanced_infinite_error));
+                    break;
+            }
         } catch (Exception e) {
             mView.setResults(e.getMessage());
         }
